@@ -11,5 +11,5 @@
 </mat-toolbar>
 
 <ng-template #viewLogout>
-  <a mat-button (click)="onLogout()">Logout</a>
+  <a *ngIf="isLogged" mat-button (click)="onLogout()">Logout</a>
 </ng-template>
