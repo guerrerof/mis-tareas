@@ -14,6 +14,10 @@ export class BaseFormUser {
       [Validators.required, Validators.pattern(this.isValidEmail)],
     ],
     password: ['', [Validators.required, Validators.minLength(5)]],
+    names: ['', [Validators.minLength(3)]],
+    surnames: ['', [Validators.minLength(3)]],
+    documentType: ['', [Validators.minLength(1)]],
+    document: ['', [Validators.minLength(5)]],
     role: ['', [Validators.required]],
   });
 

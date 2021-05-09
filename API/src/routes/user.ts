@@ -6,7 +6,7 @@ import { Router } from 'express';
 const router = Router();
 
 // Get all users
-router.get('/', [checkJwt, checkRole(['admin'])], UserController.getAll);
+router.get('/', UserController.getAll);
 
 // Get one user
 router.get('/:id', [checkJwt, checkRole(['admin'])], UserController.getById);
@@ -15,7 +15,7 @@ router.get('/:id', [checkJwt, checkRole(['admin'])], UserController.getById);
 router.post('/', [checkJwt, checkRole(['admin'])], UserController.new);
 
 // Edit user
-router.patch('/:id', [checkJwt, checkRole(['admin'])], UserController.edit);
+router.patch('/:id', [checkJwt, checkRole(['admin','docente'])], UserController.edit);
 
 // Delete
 router.delete('/:id', [checkJwt, checkRole(['admin'])], UserController.delete);

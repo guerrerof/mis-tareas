@@ -18,7 +18,7 @@ import { Subject } from 'rxjs';
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent implements AfterViewInit, OnInit, OnDestroy {
-  displayedColumns: string[] = ['id', 'role', 'username', 'actions'];
+  displayedColumns: string[] = ['id', 'role', 'username','names','surnames','documentType','document','actions'];
   dataSource = new MatTableDataSource();
 
   private destroy$ = new Subject<any>();
@@ -29,6 +29,7 @@ export class UsersComponent implements AfterViewInit, OnInit, OnDestroy {
   ngOnInit(): void {
     this.userSvc.getAll().subscribe((users) => {
       this.dataSource.data = users;
+      console.log(this.dataSource.data);
     });
   }
 

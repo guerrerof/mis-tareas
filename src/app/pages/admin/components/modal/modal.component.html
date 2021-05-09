@@ -13,6 +13,7 @@
           {{ userForm.errorMessage }}
         </mat-error>
       </mat-form-field>
+
       <mat-form-field class="full-width-input" *ngIf="showPasswordField">
         <input
           [type]="hide ? 'password' : 'text'"
@@ -28,11 +29,58 @@
           {{ userForm.errorMessage }}
         </mat-error>
       </mat-form-field>
+
+      <mat-form-field class="full-width-input">
+        <input
+          formControlName="names"
+          matInput
+          placeholder="Names"
+        />
+        <mat-error *ngIf="checkField('names')">
+          {{ userForm.errorMessage }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width-input">
+        <input
+          formControlName="surnames"
+          matInput
+          placeholder="Surnames"
+        />
+        <mat-error *ngIf="checkField('surnames')">
+          {{ userForm.errorMessage }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width-input">
+        <mat-label>Document Type </mat-label>
+        <mat-select formControlName="documentType">
+          <mat-option value="0">CC</mat-option>
+          <mat-option value="1">TT</mat-option>
+          <mat-option value="2">TE</mat-option>
+        </mat-select>
+        <mat-error *ngIf="checkField('documentType')">
+          {{ userForm.errorMessage }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width-input">
+        <input
+          formControlName="document"
+          matInput
+          placeholder="Document"
+        />
+        <mat-error *ngIf="checkField('document')">
+          {{ userForm.errorMessage }}
+        </mat-error>
+      </mat-form-field>
+
       <mat-form-field class="full-width-input">
         <mat-label>Select </mat-label>
         <mat-select formControlName="role">
           <mat-option value="suscriptor">Suscriptor</mat-option>
-          <mat-option value="admin">Admin</mat-option>
+          <mat-option *ngIf="isAdmin === 'admin'" value="admin">Admin</mat-option>
+          <mat-option value="docente">Docente</mat-option>
         </mat-select>
         <mat-error *ngIf="checkField('role')">
           {{ userForm.errorMessage }}

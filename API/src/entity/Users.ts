@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Unique, Column } from 'typeorm';
-import { MinLength, IsNotEmpty, IsEmail } from 'class-validator';
+import { MinLength, IsNotEmpty, IsEmail, IsOptional } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
 
 @Entity()
@@ -18,6 +18,22 @@ export class Users {
   @MinLength(6)
   @IsNotEmpty()
   password: string;
+
+  @Column()
+  @IsOptional()
+  names: string;
+
+  @Column()
+  @IsOptional()
+  surnames: string;
+
+  @Column()
+  @IsOptional()
+  documentType: number;
+
+  @Column()
+  @IsOptional()
+  document: number;
 
   @Column()
   @IsNotEmpty()

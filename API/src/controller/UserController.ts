@@ -1,7 +1,8 @@
-import { getRepository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { Request, Response } from 'express';
 import { Users } from '../entity/Users';
 import { validate } from 'class-validator';
+import * as jwt from 'jsonwebtoken';
 
 export class UserController {
   static getAll = async (req: Request, res: Response) => {
@@ -9,7 +10,7 @@ export class UserController {
     let users;
 
     try {
-      users = await userRepository.find({ select: ['id', 'username', 'role'] });
+      users = await userRepository.find({ select: ['id', 'username', 'role', 'names', 'surnames', 'documentType', 'document'] });
     } catch (e) {
       res.status(404).json({ message: 'Somenthing goes wrong!' });
     }
@@ -63,7 +64,7 @@ export class UserController {
   static edit = async (req: Request, res: Response) => {
     let user;
     const { id } = req.params;
-    const { username, role } = req.body;
+    const { username, role, names, surnames, documentType, document } = req.body;
 
     const userRepository = getRepository(Users);
     // Try get user
@@ -71,9 +72,28 @@ export class UserController {
       user = await userRepository.findOneOrFail(id);
       user.username = username;
       user.role = role;
+      user.names = names;
+      user.surnames = surnames;
+      user.documentType = documentType;
+      user.document = document;
     } catch (e) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    //  ValidateAdminChanges
+    const token = <string>req.headers['auth'];
+    const data = jwt.decode(token);
+
+    try {
+      const userP = await userRepository.findOneOrFail(data['userId']);
+      if (user.role === 'admin' && userP.role !== 'admin') {
+        return res.status(401).json({ message: 'Not Authorized' });
+      }
+    } catch (e) {
+      res.status(404).json({ message: 'Not result' });
+    }
+    // end ValidateAdminChanges
+
     const validationOpt = { validationError: { target: false, value: false } };
     const errors = await validate(user, validationOpt);
 
