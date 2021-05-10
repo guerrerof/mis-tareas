@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import { Request, Response } from 'express';
 import { Users } from '../entity/Users';
 import { validate } from 'class-validator';
@@ -34,12 +34,16 @@ export class UserController {
   };
 
   static new = async (req: Request, res: Response) => {
-    const { username, password, role } = req.body;
+    const { username, password, role, names, surnames, documentType, document } = req.body;
     const user = new Users();
 
     user.username = username;
     user.password = password;
     user.role = role;
+    user.names = names;
+    user.surnames = surnames;
+    user.documentType = documentType;
+    user.document = document;
 
     // Validate
     const validationOpt = { validationError: { target: false, value: false } };
@@ -121,6 +125,20 @@ export class UserController {
     } catch (e) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    //  ValidateAdminChanges
+    const token = <string>req.headers['auth'];
+    const data = jwt.decode(token);
+
+    try {
+      const userP = await userRepository.findOneOrFail(data['userId']);
+      if (user.role === 'admin' && userP.role !== 'admin') {
+        return res.status(401).json({ message: 'Not Authorized' });
+      }
+    } catch (e) {
+      res.status(404).json({ message: 'Not result' });
+    }
+    // end ValidateAdminChanges
 
     // Remove user
     userRepository.delete(id);

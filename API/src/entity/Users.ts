@@ -8,7 +8,7 @@ export class Users {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 45 })
   @MinLength(6)
   @IsEmail()
   @IsNotEmpty()
@@ -19,11 +19,11 @@ export class Users {
   @IsNotEmpty()
   password: string;
 
-  @Column()
+  @Column({ length: 45 })
   @IsOptional()
   names: string;
 
-  @Column()
+  @Column({ length: 45 })
   @IsOptional()
   surnames: string;
 
@@ -35,7 +35,7 @@ export class Users {
   @IsOptional()
   document: number;
 
-  @Column()
+  @Column({ length: 45 })
   @IsNotEmpty()
   role: string;
 
