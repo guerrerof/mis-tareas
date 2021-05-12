@@ -12,9 +12,7 @@ export class CourseController {
     const courseRepository = getRepository(Course);
     let course;
     try {
-      const date: Date = new Date();
-      console.log(date);
-      course = await courseRepository.find({ select: ['id', 'code', 'name', 'startDate', 'endDate'] });
+      course = await courseRepository.find({relations: ['user']});
     } catch (e) {
       res.status(404).json({ message: 'Somenthing goes wrong!' });
     }
@@ -48,12 +46,14 @@ export class CourseController {
 
   // **************************   INSERT    **************************
   static new = async (req: Request, res: Response) => {
-    const { code, name, startDate, endDate } = req.body;
+    const { code, name, startDate, endDate, user, state } = req.body;
     const course = new Course();
     course.code = code;
     course.name = name;
     course.startDate = startDate;
     course.endDate = endDate;
+    course.user = user;
+    course.state = state;
 
     // Validate
     const validationOpt = { validationError: { target: false, value: false } };
@@ -79,7 +79,7 @@ export class CourseController {
   static edit = async (req: Request, res: Response) => {
     let course;
     const { id } = req.params;
-    const { code, name, startDate, endDate } = req.body;
+    const { code, name, startDate, endDate, user, state } = req.body;
 
     const courseRepository = getRepository(Course);
     // Try get course
@@ -89,6 +89,8 @@ export class CourseController {
       course.name = name;
       course.startDate = startDate;
       course.endDate = endDate;
+      course.user = user;
+      course.state = state;
     } catch (e) {
       return res.status(404).json({ message: 'Course not found' });
     }
