@@ -1,3 +1,5 @@
+"use strict";
+
 import { takeUntil } from 'rxjs/operators';
 import { UsersService } from './../services/users.service';
 import {
@@ -18,13 +20,13 @@ import { Subject } from 'rxjs';
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent implements AfterViewInit, OnInit, OnDestroy {
-  displayedColumns: string[] = ['id', 'role', 'username','names','surnames','documentType','document','actions'];
+  displayedColumns: string[] = ['id', 'role', 'username', 'names', 'surnames', 'documentType', 'document', 'actions'];
   dataSource = new MatTableDataSource();
 
   private destroy$ = new Subject<any>();
 
   @ViewChild(MatSort) sort: MatSort;
-  constructor(private userSvc: UsersService, private dialog: MatDialog) {}
+  constructor(private userSvc: UsersService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.userSvc.getAll().subscribe((users) => {

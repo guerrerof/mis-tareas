@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index } from 'typeorm';
 import { IsNotEmpty, IsOptional } from 'class-validator';
-import { Course } from './course';
+import { Course } from './Course';
 
 @Entity()
 export class Activity {
@@ -24,7 +24,7 @@ export class Activity {
   @IsOptional()
   endDate: Date;
 
-  // @ManyToOne(() => Course, course => course.id)
-  // course: Course;
+  @ManyToOne(() => Course, course => course.id)
+  course: Course;
 
 }

@@ -1,16 +1,16 @@
 import { Student } from './Student';
+import { Users } from './Users';
 import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Activity } from './Activity';
 
 @Entity()
-export class ActivityStudents {
+export class StudentTeacher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Activity, activity => activity.id)
-  activity: Activity;
-
   @ManyToOne(() => Student, student => student.id)
   student: Student;
+
+  @ManyToOne(() => Users, teacher => teacher.id)
+  teacher: Users;
 
 }
