@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 import { Request, Response } from 'express';
 import { Student } from '../entity/Student';
 import { validate } from 'class-validator';
+import { Messages as sms } from '../utils/message';
+import { Entity } from '../utils/entity';
 
 export class StudentController {
 
@@ -17,11 +19,11 @@ export class StudentController {
       if (student.length > 0) {
         res.send(student);
       } else {
-        res.status(404).json({ message: 'Not result' });
+        res.status(404).json({ message: sms.SMS_NOT_FOUND });
       }
 
     } catch (e) {
-      res.status(404).json({ message: 'Somenthing goes wrong!' });
+      res.status(404).json({ message: sms.SMS_DEFAULT_ERROR });
     }
   };
 
@@ -36,7 +38,7 @@ export class StudentController {
       const student = await studentRepository.findOneOrFail(id);
       res.send(student);
     } catch (e) {
-      res.status(404).json({ message: 'Not result' });
+      res.status(404).json({ message: sms.SMS_NOT_FOUND });
     }
   };
 
@@ -66,10 +68,10 @@ export class StudentController {
     try {
       await studentRepository.save(student);
     } catch (e) {
-      return res.status(409).json({ message: 'Student already exist' });
+      return res.status(409).json({ message: sms.ALREADY_EXIST(Entity.STUDENT) });
     }
     // All ok
-    res.status(201).json({ message: 'Student created' });
+    res.status(201).json({ message: sms.CREATED(Entity.STUDENT) });
   };
 
 
@@ -91,7 +93,7 @@ export class StudentController {
       student.document = document;
       student.email = email;
     } catch (e) {
-      return res.status(404).json({ message: 'Student not found' });
+      return res.status(404).json({ message: sms.NOT_FOUND(Entity.STUDENT) });
     }
 
     const validationOpt = { validationError: { target: false, value: false } };
@@ -105,10 +107,10 @@ export class StudentController {
     try {
       await studentRepository.save(student);
     } catch (e) {
-      return res.status(409).json({ message: 'Student already in use' });
+      return res.status(409).json({ message: sms.ALREADY_IN_USE(Entity.STUDENT) });
     }
 
-    res.status(201).json({ message: 'Student update' });
+    res.status(201).json({ message: sms.UPDATED(Entity.STUDENT) });
   };
 
 
@@ -124,12 +126,12 @@ export class StudentController {
     try {
       await studentRepository.findOneOrFail(id);
     } catch (e) {
-      return res.status(404).json({ message: 'Student not found' });
+      return res.status(404).json({ message: sms.NOT_FOUND(Entity.STUDENT) });
     }
 
     // Remove student
     studentRepository.delete(id);
-    res.status(201).json({ message: ' Student deleted' });
+    res.status(201).json({ message: sms.DELETED(Entity.STUDENT) });
   };
 
 

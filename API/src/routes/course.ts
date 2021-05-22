@@ -8,6 +8,9 @@ const router = Router();
 // Get all users
 router.get('/', [checkJwt, checkRole(['admin','docente'])], CourseController.getAll);
 
+// Get My Courses
+router.get('/my-courses', [checkJwt, checkRole(['admin','docente'])], CourseController.getMyCourses);
+
 // Get one user
 router.get('/:id', [checkJwt, checkRole(['admin','docente'])], CourseController.getById);
 

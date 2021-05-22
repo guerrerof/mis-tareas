@@ -6,6 +6,15 @@ import config from '../config/config';
 import { validate } from 'class-validator';
 
 class AuthController {
+
+
+  /**
+   * Login
+   *
+   * @param req Request
+   * @param res Response
+   * @returns
+   */
   static login = async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
@@ -17,7 +26,10 @@ class AuthController {
     let user: Users;
 
     try {
-      user = await userRepository.findOneOrFail({ where: { username } });
+      //user = await userRepository.findOneOrFail({ where: { username } });
+      user = await userRepository.createQueryBuilder("Users")
+        .addSelect("Users.password")
+        .where("Users.username = :username", { username: username }).getOne();
     } catch (e) {
       return res.status(400).json({ message: ' Username or password incorecct!' });
     }
@@ -32,6 +44,14 @@ class AuthController {
     res.json({ message: 'OK', token, userId: user.id, role: user.role });
   };
 
+
+  /**
+   * Update Password
+   *
+   * @param req Request
+   * @param res Response
+   * @returns
+   */
   static changePassword = async (req: Request, res: Response) => {
     const { userId } = res.locals.jwtPayload;
     const { oldPassword, newPassword } = req.body;
@@ -44,7 +64,9 @@ class AuthController {
     let user: Users;
 
     try {
-      user = await userRepository.findOneOrFail(userId);
+      user = await userRepository.createQueryBuilder("Users")
+      .addSelect("Users.password")
+      .where("Users.id = :id", { id: userId }).getOne();
     } catch (e) {
       res.status(400).json({ message: 'Somenthing goes wrong!' });
     }

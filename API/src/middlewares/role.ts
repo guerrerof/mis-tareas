@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
 import { Request, Response, NextFunction } from 'express';
 import { Users } from '../entity/Users';
+import { Messages as sms } from '../utils/message';
 
 export const checkRole = (roles: Array<string>) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +12,7 @@ export const checkRole = (roles: Array<string>) => {
     try {
       user = await userRepository.findOneOrFail(userId);
     } catch (e) {
-      return res.status(401).json({ message: 'Not Authorized' });
+      return res.status(401).json({ message: sms.SMS_NOT_AUTHORIZED });
     }
 
     //Check
@@ -19,7 +20,7 @@ export const checkRole = (roles: Array<string>) => {
     if (roles.includes(role)) {
       next();
     } else {
-      res.status(401).json({ message: 'Not Authorized' });
+      res.status(401).json({ message: sms.SMS_NOT_AUTHORIZED });
     }
   };
 };
