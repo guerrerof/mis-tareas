@@ -1,30 +1,30 @@
 import { getRepository } from 'typeorm';
 import { Request, Response } from 'express';
-import { StudentCourse } from '../entity/StudentCourse';
+import { ActivityStudent } from '../entity/ActivityStudent';
 import { validate } from 'class-validator';
 import * as jwt from 'jsonwebtoken';
 import { BadRequestException } from '@nestjs/common';
 import { Messages as sms } from '../utils/message';
 import { Entity } from '../utils/entity';
 
-export class StudentCourseController {
+export class ActivityStudentController {
 
 
   /**
    * Select All
    *
-   * Allows to consult all StudentCourse
+   * Allows to consult all ActivityStudent
    *
    * @param req Request
    * @param res Response
    */
   static getAll = async (req: Request, res: Response) => {
-    const studentCourseRepository = getRepository(StudentCourse);
+    const studentCourseRepository = getRepository(ActivityStudent);
     let data;
     try {
-      data = await studentCourseRepository.createQueryBuilder('StudentCourse')
-        .leftJoinAndSelect("StudentCourse.student", "student")
-        .leftJoinAndSelect("StudentCourse.course", "course").getMany();
+      data = await studentCourseRepository.createQueryBuilder('ActivityStudent')
+        .leftJoinAndSelect("ActivityStudent.student", "student")
+        .leftJoinAndSelect("ActivityStudent.activity", "activity").getMany();
 
       console.log(data);
 
@@ -43,14 +43,14 @@ export class StudentCourseController {
   /**
    * Select by id
    *
-   * Allows to consult StudentCourse by identification
+   * Allows to consult ActivityStudent by identification
    *
    * @param req Request
    * @param res Response
    */
   static getById = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const studentCourseRepository = getRepository(StudentCourse);
+    const studentCourseRepository = getRepository(ActivityStudent);
     try {
       const data = await studentCourseRepository.findOneOrFail(id);
       res.send(data);
@@ -63,24 +63,24 @@ export class StudentCourseController {
   /**
    *  Select Students By Course
    *
-   * Allows to consult StudentCourse by user.
+   * Allows to consult ActivityStudent by user.
    * The user is extracted from the token
    *
    * @param req Request
    * @param res Response
    */
-  static getStudentsByCourse = async (req: Request, res: Response) => {
+  static getStudentsByActivity = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
-    const studentCourseRepository = getRepository(StudentCourse);
+    const studentCourseRepository = getRepository(ActivityStudent);
 
     try {
       const data = await studentCourseRepository
-        .createQueryBuilder("StudentCourse")
-        .leftJoinAndSelect("StudentCourse.student", "student")
-        //.leftJoinAndSelect("StudentCourse.course", "users")
-        .where("StudentCourse.course = :id", { id: id }).getMany();
+        .createQueryBuilder("ActivityStudent")
+        .leftJoinAndSelect("ActivityStudent.student", "student")
+        //.leftJoinAndSelect("ActivityStudent.activity", "users")
+        .where("ActivityStudent.activity = :id", { id: id }).getMany();
       res.send(data);
     } catch (e) {
       console.error(e);
@@ -91,24 +91,24 @@ export class StudentCourseController {
   /**
    *  Select Courses By Student
    *
-   * Allows to consult StudentCourse by user.
+   * Allows to consult ActivityStudent by user.
    * The user is extracted from the token
    *
    * @param req Request
    * @param res Response
    */
-  static getCoursesByStudent = async (req: Request, res: Response) => {
+  static getActivitysByStudent = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
-    const studentCourseRepository = getRepository(StudentCourse);
+    const studentCourseRepository = getRepository(ActivityStudent);
 
     try {
       const data = await studentCourseRepository
-        .createQueryBuilder("StudentCourse")
-        //.leftJoinAndSelect("StudentCourse.student", "student")
-        .leftJoinAndSelect("StudentCourse.course", "users")
-        .where("StudentCourse.student = :id", { id: id }).getMany();
+        .createQueryBuilder("ActivityStudent")
+        //.leftJoinAndSelect("ActivityStudent.student", "student")
+        .leftJoinAndSelect("ActivityStudent.activity", "users")
+        .where("ActivityStudent.student = :id", { id: id }).getMany();
       res.send(data);
     } catch (e) {
       console.error(e);
@@ -118,18 +118,18 @@ export class StudentCourseController {
 
 
   /**
-   * Insert new StudentCourse
+   * Insert new ActivityStudent
    *
    * @param req Request
    * @param res Response
    * @returns
    */
   static new = async (req: Request, res: Response) => {
-    const { student, course } = req.body;
+    const { student, activity } = req.body;
 
-    const item = new StudentCourse();
+    const item = new ActivityStudent();
     item.student = student;
-    item.course = course;
+    item.activity = activity;
 
     const validationOpt = { validationError: { target: false, value: false } };
     const errors = await validate(item, validationOpt);
@@ -137,33 +137,33 @@ export class StudentCourseController {
       return res.status(400).json(errors);
     }
 
-    const studentCourseRepository = getRepository(StudentCourse);
+    const studentCourseRepository = getRepository(ActivityStudent);
     try {
-      //validate student and course
-      const exist = await studentCourseRepository.find({ where: { "course": course, "student": student } })
+      //validate student and activity
+      const exist = await studentCourseRepository.find({ where: { "activity": activity, "student": student } })
 
       if (exist === null || exist.length === 0) {
         await studentCourseRepository.save(item);
       } else {
-        throw new BadRequestException(sms.ALREADY_EXIST(Entity.STUDENT_COURSE));
+        throw new BadRequestException(sms.ALREADY_EXIST(Entity.ACTIVITY_STUDENT));
       }
 
     } catch (e) {
       console.error(e);
       if (e instanceof BadRequestException) {
-        return res.status(409).json({ message: sms.ALREADY_EXIST(Entity.STUDENT_COURSE) });
+        return res.status(409).json({ message: sms.ALREADY_EXIST(Entity.ACTIVITY_STUDENT) });
       }
       return res.status(404).json({ message: sms.SMS_DEFAULT_ERROR });
     }
 
-    res.status(201).json({ message: sms.CREATED(Entity.STUDENT_COURSE) });
+    res.status(201).json({ message: sms.CREATED(Entity.ACTIVITY_STUDENT) });
   };
 
 
 
 
   /**
-   * Update StudentCourse
+   * Update ActivityStudent
    *
    * @param req Request
    * @param res Response
@@ -172,17 +172,17 @@ export class StudentCourseController {
   static edit = async (req: Request, res: Response) => {
     let item;
     const { id } = req.params;
-    const { student, course } = req.body;
-    const studentCourseRepository = getRepository(StudentCourse);
+    const { student, activity } = req.body;
+    const studentCourseRepository = getRepository(ActivityStudent);
 
     // Try get studentCourse
     try {
       item = await studentCourseRepository.findOneOrFail(id);
       item.student = student;
-      item.course = course;
+      item.activity = activity;
 
     } catch (e) {
-      return res.status(404).json({ message: sms.NOT_FOUND(Entity.STUDENT_COURSE) });
+      return res.status(404).json({ message: sms.NOT_FOUND(Entity.ACTIVITY_STUDENT) });
     }
 
     const validationOpt = { validationError: { target: false, value: false } };
@@ -196,10 +196,10 @@ export class StudentCourseController {
     try {
       await studentCourseRepository.save(item);
     } catch (e) {
-      return res.status(409).json({ message: sms.ALREADY_EXIST(Entity.STUDENT_COURSE) });
+      return res.status(409).json({ message: sms.ALREADY_EXIST(Entity.ACTIVITY_STUDENT) });
     }
 
-    res.status(201).json({ message: sms.UPDATED(Entity.STUDENT_COURSE) });
+    res.status(201).json({ message: sms.UPDATED(Entity.ACTIVITY_STUDENT) });
   };
 
 
@@ -207,7 +207,7 @@ export class StudentCourseController {
 
 
   /**
-    * Delete StudentCourse
+    * Delete ActivityStudent
     *
     * @param req Request
     * @param res Response
@@ -215,20 +215,20 @@ export class StudentCourseController {
     */
   static delete = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const studentCourseRepository = getRepository(StudentCourse);
+    const studentCourseRepository = getRepository(ActivityStudent);
 
     try {
       await studentCourseRepository.findOneOrFail(id);
     } catch (e) {
-      return res.status(404).json({ message: sms.NOT_FOUND(Entity.STUDENT_COURSE) });
+      return res.status(404).json({ message: sms.NOT_FOUND(Entity.ACTIVITY_STUDENT) });
     }
 
     // Remove studentCourse
     studentCourseRepository.delete(id);
-    res.status(201).json({ message: sms.DELETED(Entity.STUDENT_COURSE) });
+    res.status(201).json({ message: sms.DELETED(Entity.ACTIVITY_STUDENT) });
   };
 
 
 }
 
-export default StudentCourseController;
+export default ActivityStudentController;
