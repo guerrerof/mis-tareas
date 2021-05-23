@@ -94,15 +94,22 @@ export class CourseController {
    * @returns
    */
   static new = async (req: Request, res: Response) => {
-    const { code, name, startDate, endDate, user, state } = req.body;
+    const { code, name, startDate, endDate, state } = req.body;
 
     const course = new Course();
     course.code = code;
     course.name = name;
     course.startDate = startDate;
     course.endDate = endDate;
-    course.user = user;
     course.state = state;
+
+    //  ValidateUserToken
+    const token = <string>req.headers['auth'];
+    const data = jwt.decode(token);
+    const userId = data['userId'];
+    // end ValidateUserToken
+
+    course.user = userId;
 
     const validationOpt = { validationError: { target: false, value: false } };
     const errors = await validate(course, validationOpt);
@@ -133,7 +140,7 @@ export class CourseController {
   static edit = async (req: Request, res: Response) => {
     let course;
     const { id } = req.params;
-    const { code, name, startDate, endDate, user, state } = req.body;
+    const { code, name, startDate, endDate, state } = req.body;
     const courseRepository = getRepository(Course);
 
     // Try get course
@@ -143,8 +150,16 @@ export class CourseController {
       course.name = name;
       course.startDate = startDate;
       course.endDate = endDate;
-      course.user = user;
       course.state = state;
+
+      //  ValidateUserToken
+      const token = <string>req.headers['auth'];
+      const data = jwt.decode(token);
+      const userId = data['userId'];
+      // end ValidateUserToken
+
+      course.user = userId;
+
     } catch (e) {
       return res.status(404).json({ message: sms.NOT_FOUND(Entity.COURSE) });
     }
@@ -168,15 +183,13 @@ export class CourseController {
 
 
 
-
-
- /**
-   * Delete Course
-   *
-   * @param req Request
-   * @param res Response
-   * @returns
-   */
+  /**
+    * Delete Course
+    *
+    * @param req Request
+    * @param res Response
+    * @returns
+    */
   static delete = async (req: Request, res: Response) => {
     const { id } = req.params;
     const courseRepository = getRepository(Course);
@@ -192,7 +205,6 @@ export class CourseController {
     courseRepository.delete(id);
     res.status(201).json({ message: sms.DELETED(Entity.COURSE) });
   };
-
 
 }
 
