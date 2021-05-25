@@ -97,7 +97,7 @@ export class ActivityStudentController {
    * @param req Request
    * @param res Response
    */
-  static getActivitysByStudent = async (req: Request, res: Response) => {
+  static getActivitiesByStudent = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
@@ -109,6 +109,67 @@ export class ActivityStudentController {
         //.leftJoinAndSelect("ActivityStudent.student", "student")
         .leftJoinAndSelect("ActivityStudent.activity", "users")
         .where("ActivityStudent.student = :id", { id: id }).getMany();
+      res.send(data);
+    } catch (e) {
+      console.error(e);
+      res.status(404).json({ message: sms.SMS_NOT_FOUND });
+    }
+  };
+
+
+  /**
+   *  Select Courses By documents of Student
+   *
+   * Allows to consult ActivityStudent by user.
+   * The user is extracted from the token
+   *
+   * @param req Request
+   * @param res Response
+   */
+  static getActivitiesByStudentDocument = async (req: Request, res: Response) => {
+
+    const { document } = req.params;
+
+    const studentCourseRepository = getRepository(ActivityStudent);
+
+    try {
+      const data = await studentCourseRepository
+        .createQueryBuilder("ActivityStudent")
+        .leftJoinAndSelect("ActivityStudent.student", "student")
+        .leftJoinAndSelect("ActivityStudent.activity", "users")
+        .where("student.document = :document", { document: document })
+        .getMany();
+      res.send(data);
+    } catch (e) {
+      console.error(e);
+      res.status(404).json({ message: sms.SMS_NOT_FOUND });
+    }
+  };
+
+
+  /**
+   *  Select Courses By documents of Student
+   *
+   * Allows to consult ActivityStudent by user.
+   * The user is extracted from the token
+   *
+   * @param req Request
+   * @param res Response
+   */
+  static getActivitiesByStudentDocuments = async (req: Request, res: Response) => {
+
+    const { documentType, document } = req.params;
+
+    const studentCourseRepository = getRepository(ActivityStudent);
+
+    try {
+      const data = await studentCourseRepository
+        .createQueryBuilder("ActivityStudent")
+        .leftJoinAndSelect("ActivityStudent.student", "student")
+        .leftJoinAndSelect("ActivityStudent.activity", "users")
+        .where("student.documentType = :documentType", { documentType: documentType })
+        .andWhere("student.document = :document", { document: document })
+        .getMany();
       res.send(data);
     } catch (e) {
       console.error(e);

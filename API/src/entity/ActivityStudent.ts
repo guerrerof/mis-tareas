@@ -1,6 +1,7 @@
 import { Student } from './Student';
-import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 import { Activity } from './Activity';
+import { IsOptional } from 'class-validator';
 
 @Entity()
 export class ActivityStudent {
@@ -12,5 +13,13 @@ export class ActivityStudent {
 
   @ManyToOne(() => Student, student => student.id)
   student: Student;
+
+  @Column({type:"varchar", length:500})
+  @IsOptional()
+  observation: string;
+
+  @Column()
+  @IsOptional()
+  state: boolean;
 
 }

@@ -29,6 +29,6 @@ export class Course {
 
   @Column()
   @IsOptional()
-  state: Boolean;
+  state: boolean;
 
 }
